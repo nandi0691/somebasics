@@ -5,10 +5,22 @@
 #include <unistd.h>
 #include <sys/prctl.h>
 #include <sys/wait.h>
+#include <array>
 
 //#define INIT(a) BC<a> obj;
 #define INIT(a) BC<a> *ptr = reinterpret_cast<a>&(Singleton<BC<a>>::getInstance());ptr->init()
 //#define INIT(a) std::cout << "output: " #a << '\n';
+enum process {
+	eProcessManager=0,
+	eBCInput,
+	eBCManager,
+	eBCWriter,
+	eBCTest,
+
+	MAX_NUM_PROCESS
+};
+
+static std::array<std::string,MAX_NUM_PROCESS> procArray {"ProcessManager","BCInput","BCManager","BCWriter","BCTest"};
 class Task
 {
 	private:
@@ -19,7 +31,7 @@ class Task
 		void SetProcessName(std::string name){m_ProcName = name;}
 		void SetRoot(bool val){m_isItRoot = val;}
 	public:
-		pid_t CreateProcess(std::string name,bool isGiveRoot = false);
+		pid_t CreateProcess(const bool isGiveRoot = false);
 		int CreateThread(std::string name);
 		std::string GetProcessName()const {return m_ProcName;}
 		bool GetRoot()const {return m_isItRoot;}
